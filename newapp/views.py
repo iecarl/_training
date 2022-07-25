@@ -24,6 +24,9 @@ class StudentViewSet(APIView):
 
     def get(self, request, format=None):
         students = Student.objects.all()
+
+        for student in students:
+            print(f"ID:{student.id}, Name:{student.name}")
         context = {}
         context['data'] = StudentSerializer(students, many=True).data
         return Response(context)
@@ -55,12 +58,21 @@ class StudentViewSet(APIView):
         data = request.data
         print(data)
         try:
-            name = data["name"]
-            students = Student.objects.filter(name=name)
-            existing_student = students[0]
-            existing_student.name = data["new_name"]
-            existing_student.save()
-            context['remark'] = f"Student new name is {existing_student.name}"
+            # name = data["name"]
+            # students = Student.objects.filter(name=name)
+            # existing_student = students[0]
+            # existing_student.name = data["new_name"]
+            # existing_student.save()
+            # context['remark'] = f"Student new name is {existing_student.name}"
+            id = data["id"]
+            students = Student.objects.filter(id=id)
+            for student in students:
+                student.name = data["name"]
+                student.save()
+            if students.count() > 0:
+                context['remark'] = f"Student new name is {students[0].name}"
+            else:
+                context['remark'] = "No student update."
         except:
             context['remark'] = "error"
         return Response(context)
